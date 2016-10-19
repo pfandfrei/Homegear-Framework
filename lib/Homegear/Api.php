@@ -237,4 +237,9 @@ class Api
         }
         return $result;
     }
+    
+    public function log($level, $message)
+    {
+        $this->_hg->log($level, $message);
+    }
 }
