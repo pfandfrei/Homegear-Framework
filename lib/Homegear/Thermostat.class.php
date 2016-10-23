@@ -23,7 +23,7 @@ class Thermostat extends Device
     
     public function __construct($peerid)
     {
-        parent::construct($peerid);
+        parent::__construct($peerid);
     }
 
     /* 
@@ -63,7 +63,7 @@ class Thermostat extends Device
     function getLastHumidity()
     {
         global $api;
-        return $api->getMeta($this->peerid, LAST_HUMIDITY, 0);
+        return $api->getValue($this->peerid, LAST_HUMIDITY, 0);
     }
 
     /* 
@@ -81,6 +81,6 @@ class Thermostat extends Device
     function setLastHumidity($value)
     {
         global $api;
-        $result = $api->setMeta($this->peerid, LAST_HUMIDITY, $value);
+        $result = $api->setValue($this->peerid, LAST_HUMIDITY, $value);
     }
 }

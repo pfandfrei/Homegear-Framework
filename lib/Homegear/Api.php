@@ -18,7 +18,8 @@ $api = new \Homegear\Api();
 
 class Api
 {
-
+    const LOGFILE = '/var/log/homegear/homegear.api.log';
+    
     private $_hg;
 
     public function __construct()
@@ -81,7 +82,7 @@ class Api
     {
         try
         {
-            $result = $this->_hg->getValue($peerId, $channel, $param);
+            $result = $this->_hg->getValue(intval($peerId), intval($channel), $param);
         }
         catch (\Homegear\HomegearException $e)
         {
@@ -91,7 +92,7 @@ class Api
     }
 
     /*
-     * implements Homegear::getValue
+     * implements Homegear::setValue
      * returns error code in case of an error
      */
     public function setValue($peerId, $channel, $param, $value)
@@ -100,7 +101,7 @@ class Api
 
         try
         {
-            $result = $this->_hg->setValue($peerId, $channel, $param, $value);
+            $result = $this->_hg->setValue(intval($peerId), intval($channel), $param, $value);
         }
         catch (\Homegear\HomegearException $e)
         {
@@ -143,7 +144,7 @@ class Api
         $result = FALSE;
         try
         {
-            $result = $this->_hg->getAllMetadata($peerid);        
+            $result = $this->_hg->getAllMetadata(intval($peerid));        
         }
         catch (\Homegear\HomegearException $e)
         {
@@ -160,8 +161,8 @@ class Api
         $result = $default;
         try
         {
-            $deviceMeta = $this->_hg->getAllMetadata($peerid);
-            if (isset($deviceMeta))
+            $deviceMeta = $this->_hg->getAllMetadata(intval($peerid));
+            if (array_key_exists($meta, $deviceMeta))
             {   
                 $result = $deviceMeta[$meta];
             }
@@ -177,7 +178,7 @@ class Api
      */
     public function setMeta($peerid, $meta, $value)
     {
-        $this->_hg->setMetadata($peerid, $meta, $value);
+        $this->_hg->setMetadata(intval($peerid), $meta, $value);
     }
 
     /*
@@ -201,7 +202,7 @@ class Api
      */
     public function getName($peerid)
     {
-        return $this->getMeta($peerid, 'NAME', $peerid);
+        return $this->getMeta(intval($peerid), 'NAME', $peerid);
     }
 
     /*
@@ -209,7 +210,7 @@ class Api
      */
     public function getFriendly($peerid)
     {
-        return $this->getMeta($peerid, 'FRIENDLY_NAME', $peerid);
+        return $this->getMeta(intval($peerid), 'FRIENDLY_NAME', $peerid);
     }
 
     /*
@@ -240,6 +241,6 @@ class Api
     
     public function log($level, $message)
     {
-        $this->_hg->log($level, $message);
+        error_log($message."\r\n", 3, \Homegear\Api::LOGFILE); 
     }
 }

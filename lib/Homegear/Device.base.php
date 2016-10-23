@@ -29,12 +29,12 @@ abstract class Device
         }
         else
         {
-            $this->peerid = $peerid;
+            $this->peerid = intval($peerid);
         }
         
         $meta = $api->getAllMeta($this->peerid);
         $this->name = $meta['NAME']? : $peerid;
-        if (array_key_exists('FRIENDLY_NAME', $meta))
+        if (is_array($meta) && array_key_exists('FRIENDLY_NAME', $meta))
         {
             $this->friendly = $meta['FRIENDLY_NAME'];
         }
@@ -54,12 +54,30 @@ abstract class Device
     }
     
     /*
+     * gets peer id of device
+     */
+    public function getPeerId()
+    {
+        return $this->peerid;
+    }
+    
+    /*
      * gets friendly name of device
      */
     public function getFriendly()
     {
         global $api;
         return $api->getFriendly($this->peerid);
+    }
+    
+    /*
+     * implements Homegear::getValue
+     * returns given default value (or FALSE) in case of an error
+     */
+    public function getValue($channel, $param, $default = FALSE)
+    {
+        global $api;
+        return $api->getValue($this->peerid, $channel, $param, $default);
     }
     
     /* 
