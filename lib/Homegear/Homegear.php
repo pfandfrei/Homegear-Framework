@@ -25,7 +25,8 @@ if (!class_exists('\Homegear\Homegear'))
     require_once(__DIR__.'/../../HM-XMLRPC-Client/Client.php');
     class Homegear
     {
-        const LOGFILE = '/tmp/homegear.api.log';
+        const LOGFILE = '/var/log/homegear/homegear.api.log';
+        
         private static $scriptId = 0;
         private $ssl = false;   // ssl is not yet supported
         private $Client;
