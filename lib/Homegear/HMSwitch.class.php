@@ -48,7 +48,6 @@ class HMSwitch extends Device
         {
             global $api;
             $result = $api->getValue($this->peerid, $chn_no, 'STATE', FALSE);
-            $this->setLastState($result);
         }
         return $result;
     }
@@ -72,8 +71,14 @@ class HMSwitch extends Device
                     $result += $api->setValue($this->peerid, $chn_no, 'ON_TIME', floatval($ontime));
                 }
                 $result += $api->setValue($this->peerid, $chn_no, 'STATE', boolval($state));
-
-                $this->Log("set ".($state ? "ON" : "OFF")." for ".$ontime."s");
+                if ($count == 0)
+                {
+                    $this->Log('set '.($state ? 'ON' : 'OFF').' for '.$ontime.'s');
+                }
+                else
+                {
+                    $this->Log('set '.($state ? 'ON' : 'OFF').' for '.$ontime.'s (' . $count . ')');
+                }
             }
             while ($result && (++$count < $this->retry));
         }
