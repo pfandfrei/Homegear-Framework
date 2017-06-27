@@ -41,6 +41,6 @@ class DoorContact extends Device
      */
     function isOpen()
     {
-        return boolval(getState());
+        return boolval($this->getState());
     }
 }
