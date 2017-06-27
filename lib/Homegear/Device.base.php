@@ -99,6 +99,19 @@ abstract class Device
     }
     
     /* 
+     * reset sticky unreach if needed
+     */
+    public function resetStickyUnreach()
+    {
+        global $api;
+        if ($this->StickyUnreach())
+        {
+            $api->setValue($this->peerid, 0, 'STICKY_UNREACH', FALSE);
+            $this->Log('reset sticky unreach');
+        }
+    }
+    
+    /* 
      * returns true if config pending is signaled
      */    
     public function ConfigPending()
