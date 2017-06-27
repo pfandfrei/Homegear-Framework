@@ -161,14 +161,11 @@ class Api
         $result = $default;
         try
         {
-            $deviceMeta = $this->_hg->getAllMetadata(intval($peerid));
-            if (array_key_exists($meta, $deviceMeta))
-            {   
-                $result = $deviceMeta[$meta];
-            }
+            $result = $this->_hg->getMetadata(intval($peerid), $meta);
         }
         catch (\Homegear\HomegearException $e)
         {
+            $result = $default;
         }
         return $result;
     }
@@ -222,6 +219,14 @@ class Api
     }
 
     /*
+     * implements Homegear::addEvent
+     */
+    public function enableEvent($event, $enabled)
+    {
+        return $this->_hg->enableEvent($event, $enabled);
+    }
+
+    /*
      * implements Homegear::removeEvent
      * catches exception if event does not exist
      */
@@ -241,6 +246,12 @@ class Api
     
     public function log($level, $message)
     {
-        error_log($message."\r\n", 3, \Homegear\Api::LOGFILE); 
+        try
+        {
+            error_log($message."\r\n", 3, \Homegear\Api::LOGFILE); 
+        } 
+        catch (Exception $ex) 
+        {
+        }
     }
 }
