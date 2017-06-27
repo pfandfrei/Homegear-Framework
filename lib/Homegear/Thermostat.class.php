@@ -33,7 +33,6 @@ class Thermostat extends Device
     {
         global $api;
         $result = $api->getValue($this->peerid, 2, 'ACTUAL_TEMPERATURE', 0);
-        $this->setLastTemperature($result);
         return $result;
     }
 
@@ -44,7 +43,6 @@ class Thermostat extends Device
     {
         global $api;
         $result = $api->getValue($this->peerid, 2, 'ACTUAL_HUMIDITY', 0);
-        $this->setLastHumidity($result);
         return $result;
     }
 
@@ -54,7 +52,7 @@ class Thermostat extends Device
     function getLastTemperature()
     {
         global $api;
-        return $api->getMeta($this->peerid, LAST_TEMPERATURE, 0);
+        return $api->getMeta($this->peerid, \Homegear\Thermostat::LAST_TEMPERATURE, 0);
     }
 
     /* 
@@ -63,7 +61,7 @@ class Thermostat extends Device
     function getLastHumidity()
     {
         global $api;
-        return $api->getValue($this->peerid, LAST_HUMIDITY, 0);
+        return $api->getMeta($this->peerid, \Homegear\Thermostat::LAST_HUMIDITY, 0);
     }
 
     /* 
@@ -72,7 +70,7 @@ class Thermostat extends Device
     function setLastTemperature($value)
     {
         global $api;
-        $result = $api->setMeta($this->peerid, LAST_TEMPERATURE, $value);
+        $result = $api->setMeta($this->peerid, \Homegear\Thermostat::LAST_TEMPERATURE, $value);
     }
 
     /* 
@@ -81,6 +79,6 @@ class Thermostat extends Device
     function setLastHumidity($value)
     {
         global $api;
-        $result = $api->setValue($this->peerid, LAST_HUMIDITY, $value);
+        $result = $api->setMeta($this->peerid, \Homegear\Thermostat::LAST_HUMIDITY, $value);
     }
 }
