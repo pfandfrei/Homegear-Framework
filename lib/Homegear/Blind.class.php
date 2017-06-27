@@ -19,6 +19,7 @@
 namespace Homegear;
 
 include_once __DIR__ . '/Device.base.php';
+include_once __DIR__ . '/Constants.php';
 
 class Blind extends Device
 {
@@ -32,6 +33,7 @@ class Blind extends Device
     const MODE = 'MODE';           // meta tag for mode
 
     private $retry = 0;
+    private $autorepeat = FALSE;
 
     public function __construct($peerid)
     {
@@ -41,17 +43,23 @@ class Blind extends Device
     /*
      * set repeat of sending in device is not reachable
      */
-
     function setRetry($retry)
     {
         $this->retry = $retry;
     }
 
     /*
+     * set repeat of sending in device is not reachable
+     */
+    function setAutoRepeat($autorepeat)
+    {
+        $this->autorepeat = $autorepeat;
+    }
+
+    /*
      * get actual blind position
      * see remark in header of this file
      */
-
     function getPosition()
     {
         return $this->Level2Position($this->getLevel());
@@ -86,38 +94,54 @@ class Blind extends Device
      */
     function setLevel($level, $manual = false)
     {
-        global $api;
-        $count = 0;
-        $result = 0;
-
-        $mode = $this->getMode();
-        $cur_level = $this->getLevel();
-        if ($manual)
+        if (!$this->getInhibit())
         {
-            $mode = \Homegear\Blind::MANUAL;
+            global $api;
+            $count = 0;
+            $result = 0;
+
+            $mode = $this->getMode();
+            $cur_level = $this->getLevel();
+            if ($manual)
+            {
+                $mode = \Homegear\Blind::MANUAL;
+            }
+
+            $this->setMode($mode);
+            $this->setLastLevel($cur_level);
+
+            do
+            {
+                if ($mode == \Homegear\Blind::AUTO)
+                {
+                    $this->setTimestamp(time() + 40);
+                }
+                $result = $api->setValue($this->peerid, 1, 'LEVEL', $level);
+
+                if ($count == 0)
+                {
+                    $this->Log($this->Level2Position($cur_level) . '% > ' . $this->Level2Position($level) . '%');
+                }
+                else
+                {
+                    $this->Log($this->Level2Position($cur_level) . '% > ' . $this->Level2Position($level) . '% (' . $count . ')');
+                }
+            }
+            while ($result && ( ++$count < $this->retry));
+            if ($this->autorepeat && $result)
+            {
+                $this->Log($this->Level2Position($cur_level) . '% > ' . $this->Level2Position($level) . '% (set repeat)');
+                $now = time();
+                $api->addEvent(
+                [
+                    'TYPE' => \Homegear\Constants\Event::Type_Timed,  
+                    'ID' => $this->name.'_REPEAT',    
+                    "EVENTTIME" => $now + 60,              
+                    'EVENTMETHOD' => 'runScript',    
+                    'EVENTMETHODPARAMS' => ['sunrise/setBlindLevel.php', $this->peerid.' '.((double)$level).' 1']
+                ]);         
+            }
         }
-
-        $this->setMode($mode);
-        $this->setLastLevel($level);
-
-        do
-        {
-            if ($mode == \Homegear\Blind::AUTO)
-            {
-                $this->setTimestamp(time() + 40);
-            }
-            $result = $api->setValue($this->peerid, 1, 'LEVEL', $level);
-
-            if ($count == 0)
-            {
-                $this->Log($this->Level2Position($cur_level) . '% > ' . $this->Level2Position($level) . '%');
-            }
-            else
-            {
-                $this->Log($this->Level2Position($cur_level) . '% > ' . $this->Level2Position($level) . '% (' . $count . ')');
-            }
-        }
-        while ($result && ( ++$count < $this->retry));
     }
 
     /*
@@ -210,6 +234,35 @@ class Blind extends Device
     {
         global $api;
         return boolval($api->getValue($this->peerid, 1, 'WORKING'));
+    }
+
+    /*
+     * returns TRUE if blind is moving
+     */
+
+    function getInhibit()
+    {
+        global $api;
+        return boolval($api->getValue($this->peerid, 1, 'INHIBIT'));
+    }
+
+    /*
+     * returns TRUE if blind is moving
+     */
+
+    function setInhibit($value)
+    {
+        if ($value)
+        {
+            $this->Log("set INHIBIT to TRUE");
+        }
+        else
+        {
+            $this->Log("set INHIBIT to FALSE");
+        }
+
+        global $api;
+        return $api->setValue($this->peerid, 1, 'INHIBIT', boolval($value));
     }
 
     /*
