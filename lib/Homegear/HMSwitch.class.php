@@ -31,6 +31,14 @@ class HMSwitch extends Device
     }
 
     /*
+     * get the number of channels
+     */
+    function getChannelCount()
+    {
+        return $this->number_of_channels;
+    }
+
+    /*
      * set repeat of sending in device is not reachable
      */
     function setRetry($retry)
@@ -87,18 +95,32 @@ class HMSwitch extends Device
     /*
      * get last state
      */
-    function getLastState()
+    function getLastState($chn_no = 1)
     {
         global $api;
-        return $api->getMeta($this->peerid, \Homegear\HMSwitch::LAST_STATE, false);
+        if ($this->number_of_channels===1)
+        {
+            return $api->getMeta($this->peerid, \Homegear\HMSwitch::LAST_STATE, false);
+        }
+        else
+        {
+            return $api->getMeta($this->peerid, \Homegear\HMSwitch::LAST_STATE.$chn_no, false);
+        }
     }
     
     /*
      * set last state
      */
-    function setLastState($value)
+    function setLastState($value, $chn_no = 1)
     {
         global $api;
-        $result = $api->setMeta($this->peerid, \Homegear\HMSwitch::LAST_STATE, boolval($value));
+        if ($this->number_of_channels===1)
+        {
+            $result = $api->setMeta($this->peerid, \Homegear\HMSwitch::LAST_STATE, boolval($value));
+        }
+        else
+        {
+            $result = $api->setMeta($this->peerid, \Homegear\HMSwitch::LAST_STATE.$chn_no, boolval($value));
+        }
     }
 }
