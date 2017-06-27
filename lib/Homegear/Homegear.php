@@ -50,10 +50,32 @@ if (!class_exists('\Homegear\Homegear'))
             $this->Client->send('removeEvent', $eventId);
         }
 
+        // implements Homegear::enableEvent
+        public function enableEvent($event, $enabled)
+        {
+            //return evaluate($this->Client->send('enableEvent', [$event, $enabled]));
+            $this->Client->send('enableEvent', [$event, $enabled]);
+        }
+
         // implements Homegear::pollEvent
         public function pollEvent()
         {
-            return evaluate($this->Client->send('pollEvent'));
+            //return $this->evaluate($this->Client->send('pollEvent', []));
+            return $this->Client->send('pollEvent', []);
+        }     
+        
+        // implements Homegear::getPeerId
+        // possible filter values are defined as constants in Constants.php
+        public function createDevice($familyId, $deviceType, $serialNumber, $address, $firmwareVersion)
+        {
+            return $this->Client->send('createDevice', [$familyId, $deviceType, $serialNumber, $address, $firmwareVersion]); 
+        }
+        
+        // implements Homegear::getPeerId
+        // possible filter values are defined as constants in Constants.php
+        public function listDevices($channels, $fields, $familyId)
+        {
+            return $this->Client->send('listDevices', [$channels, $fields, $familyId]); 
         }
         
         // implements Homegear::getPeerId
@@ -121,6 +143,12 @@ if (!class_exists('\Homegear\Homegear'))
         public function getParamset($peerId, $channel, $type)
         {
             return $this->evaluate($this->Client->send('getParamset', [$peerId, $channel, $type])); 
+        }
+
+        // implements Homegear::putParamset
+        public function putParamset($peerId, $channel, $parameterSet)
+        {
+            $this->evaluate( $this->Client->send('putParamset', [$peerId, $channel, $parameterSet]));
         }
 
         // implements Homegear::registerThread
