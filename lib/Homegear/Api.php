@@ -41,6 +41,10 @@ class Api
         {
             $result = $default;
         }
+        catch (Exception $e)
+        {
+            $result = $default;
+        }
         return $result;
     }
     
@@ -57,6 +61,10 @@ class Api
         {
             
         }
+        catch (Exception $e)
+        {
+            
+        }
     }
     
     /*
@@ -69,6 +77,10 @@ class Api
             $result = $this->_hg->deleteSystemVariable($name);
         }
         catch (\Homegear\HomegearException $e)
+        {
+            
+        }
+        catch (Exception $e)
         {
             
         }
@@ -88,6 +100,10 @@ class Api
         {
             $result = $default;
         }
+        catch (Exception $e)
+        {
+            $result = $default;
+        }
         return $result;
     }
 
@@ -104,6 +120,10 @@ class Api
             $result = $this->_hg->setValue(intval($peerId), intval($channel), $param, $value);
         }
         catch (\Homegear\HomegearException $e)
+        {
+            $result = $e->getCode();
+        }
+        catch (Exception $e)
         {
             $result = $e->getCode();
         }
@@ -149,6 +169,9 @@ class Api
         catch (\Homegear\HomegearException $e)
         {
         }
+        catch (Exception $e)
+        {
+        }
         return $result;
     }
 
@@ -164,6 +187,10 @@ class Api
             $result = $this->_hg->getMetadata(intval($peerid), $meta);
         }
         catch (\Homegear\HomegearException $e)
+        {
+            $result = $default;
+        }
+        catch (Exception $e)
         {
             $result = $default;
         }
@@ -238,6 +265,10 @@ class Api
             $this->_hg->removeEvent($eventId);
         }
         catch (\Homegear\HomegearException $e)
+        {
+            $result = FALSE;
+        }
+        catch (Exception $e)
         {
             $result = FALSE;
         }
